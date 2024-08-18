@@ -1,4 +1,4 @@
-const db = require('../../models/firebase')
+const db = require('../models/firebase')
 
 // Função para criar um novo role
 const createRole = async (req, res) => {
