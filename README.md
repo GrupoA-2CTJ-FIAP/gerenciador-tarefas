@@ -6,7 +6,7 @@ Este projeto é uma aplicação de gestão de times e tarefas.
 
 ## Instalação
 
-Após o Clone do projeto navegue até a pasta team-task-management/backend
+Após o Clone do projeto navegue até a pasta backend
 
 Instale as dependências utilizando: ˋnpm installˋ
 
