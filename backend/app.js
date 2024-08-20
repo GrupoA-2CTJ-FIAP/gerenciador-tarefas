@@ -2,9 +2,9 @@ const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv')
 const bodyParser = require('body-parser')
-const teamRoutes = require('./routes/teamRoutes')
+const membersRoutes = require('./routes/membersRoutes')
 const taskRoutes = require('./routes/taskRoutes')
-const roleRoutes = require('./routes/roleRoutes')
+const teamRoutes = require('./routes/teamRoutes')
 
 const app = express()
 
@@ -12,9 +12,9 @@ app.use(cors())
 app.use(express.json())
 app.use(bodyParser.json())
 
-app.use('/api', teamRoutes)
+app.use('/api', membersRoutes)
 app.use('/api', taskRoutes)
-app.use('/api', roleRoutes)
+app.use('/api', teamRoutes)
 
 const PORT = process.env.PORT || 5000
 

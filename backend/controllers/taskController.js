@@ -73,6 +73,7 @@ const createTask = async (req, res) => {
 
     res.status(201).send({ id: newTask.id })
   } catch (error) {
+    console.error('Error creating team member:', error)
     res.status(500).send('Error creating task')
   }
 }
