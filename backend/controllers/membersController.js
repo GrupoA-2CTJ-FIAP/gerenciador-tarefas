@@ -2,34 +2,6 @@ const db = require('../models/firebase')
 const admin = require('firebase-admin')
 
 // Função para criar um novo membro da equipe com team
-/*const createTeamMember = async (req, res) => {
-  const { name, email, teamId } = req.body
-  if (!name || !email || !teamId) {
-    return res.status(400).send('All fields are required')
-  }
-
-  try {
-    // Verificar se o team com o ID fornecido existe na coleção 'equipes'
-    const teamDoc = await db.collection('equipes').doc(teamId).get()
-    if (!teamDoc.exists) {
-      return res.status(400).send('Team ID does not exist')
-    }
-
-    const newMember = await db.collection('usuarios').add({
-      name,
-      email,
-      teamId, // Associar o membro com o ID do team
-      totalHours: 0 // Inicialmente 0 horas alocadas
-    })
-
-    res.status(201).send({ id: newMember.id })
-  } catch (error) {
-    console.error('Error creating team member:', error) // Adiciona log de erro para debug
-    res.status(500).send('Error creating team member')
-  }
-}*/
-
-// Função para criar um novo membro da equipe com team
 const createTeamMember = async (req, res) => {
   const { name, email, teamId, password } = req.body
   if (!name || !email || !teamId || !password) {

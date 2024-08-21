@@ -1,12 +1,14 @@
 const db = require('../models/firebase')
 
-// Definir opções permitidas para a prioridade
+// Definir opções permitidas para a prioridade e status
 const PRIORITY_OPTIONS = ['Baixa', 'Média', 'Alta', 'Urgente']
+const STATUS_OPTIONS = ['To-do', 'Em progresso', 'Concluído']
 
 // Função para validar a prioridade
-const validatePriority = priority => {
-  return PRIORITY_OPTIONS.includes(priority)
-}
+const validatePriority = priority => PRIORITY_OPTIONS.includes(priority)
+
+// Função para validar o status
+const validateStatus = status => STATUS_OPTIONS.includes(status)
 
 // Função para obter todos os membros
 const getMembers = async () => {
@@ -36,9 +38,17 @@ const updateTotalHoursForMember = async memberId => {
 
 // Criar tarefa e atualizar as horas alocadas
 const createTask = async (req, res) => {
-  const { description, startDate, endDate, priority, assignedTo } = req.body
+  const { description, endDate, priority, status, assignedTo, duration } =
+    req.body
 
-  if (!description || !startDate || !endDate || !priority || !assignedTo) {
+  if (
+    !description ||
+    !endDate ||
+    !priority ||
+    !status ||
+    !assignedTo ||
+    !duration
+  ) {
     return res.status(400).send('All fields are required')
   }
 
@@ -46,34 +56,31 @@ const createTask = async (req, res) => {
     return res.status(400).send('Invalid priority')
   }
 
+  if (!validateStatus(status)) {
+    return res.status(400).send('Invalid status')
+  }
+
   if (!(await validateAssignedTo(assignedTo))) {
     return res.status(400).send('Invalid assignedTo member ID')
   }
 
   try {
-    const startTimestamp = new Date(startDate)
     const endTimestamp = new Date(endDate)
-
-    if (endTimestamp <= startTimestamp) {
-      return res.status(400).send('End date must be after start date')
-    }
-
-    const duration = (endTimestamp - startTimestamp) / (1000 * 60 * 60) // Duração em horas
 
     const newTask = await db.collection('atividades').add({
       description,
-      startDate: startTimestamp,
       endDate: endTimestamp,
       priority,
+      status,
       assignedTo,
-      duration
+      duration: parseFloat(duration) // Duração fornecida pelo usuário
     })
 
     await updateTotalHoursForMember(assignedTo)
 
     res.status(201).send({ id: newTask.id })
   } catch (error) {
-    console.error('Error creating team member:', error)
+    console.error('Error creating task:', error)
     res.status(500).send('Error creating task')
   }
 }
@@ -87,7 +94,6 @@ const getTasks = async (req, res) => {
         const taskData = doc.data()
         let memberData = null
 
-        // Verifica se assignedTo é um valor válido
         if (taskData.assignedTo) {
           try {
             const memberSnapshot = await db
@@ -110,7 +116,7 @@ const getTasks = async (req, res) => {
     )
     res.status(200).json(tasks)
   } catch (error) {
-    console.error('Error fetching tasks:', error) // Adiciona log de erro para depuração
+    console.error('Error fetching tasks:', error)
     res.status(500).json({ error: 'Failed to get tasks' })
   }
 }
@@ -118,9 +124,17 @@ const getTasks = async (req, res) => {
 // Atualizar tarefa e as horas alocadas, se necessário
 const updateTask = async (req, res) => {
   const { id } = req.params
-  const { description, startDate, endDate, priority, assignedTo } = req.body
+  const { description, endDate, priority, status, assignedTo, duration } =
+    req.body
 
-  if (!description || !startDate || !endDate || !priority || !assignedTo) {
+  if (
+    !description ||
+    !endDate ||
+    !priority ||
+    !status ||
+    !assignedTo ||
+    !duration
+  ) {
     return res.status(400).send('All fields are required')
   }
 
@@ -128,19 +142,16 @@ const updateTask = async (req, res) => {
     return res.status(400).send('Invalid priority')
   }
 
+  if (!validateStatus(status)) {
+    return res.status(400).send('Invalid status')
+  }
+
   if (!(await validateAssignedTo(assignedTo))) {
     return res.status(400).send('Invalid assignedTo member ID')
   }
 
   try {
-    const startTimestamp = new Date(startDate)
     const endTimestamp = new Date(endDate)
-
-    if (endTimestamp <= startTimestamp) {
-      return res.status(400).send('End date must be after start date')
-    }
-
-    const duration = (endTimestamp - startTimestamp) / (1000 * 60 * 60) // Duração em horas
 
     const taskRef = db.collection('atividades').doc(id)
     const task = await taskRef.get()
@@ -153,11 +164,11 @@ const updateTask = async (req, res) => {
 
     await taskRef.update({
       description,
-      startDate: startTimestamp,
       endDate: endTimestamp,
       priority,
+      status,
       assignedTo,
-      duration
+      duration: parseFloat(duration) // Duração fornecida pelo usuário
     })
 
     if (assignedTo !== previousAssignedTo) {
@@ -186,17 +197,15 @@ const deleteTask = async (req, res) => {
     const taskData = taskSnapshot.data()
     const assignedTo = taskData.assignedTo
 
-    // Delete the task
     await taskRef.delete()
 
-    // Update total hours for the member
     if (assignedTo) {
       await updateTotalHoursForMember(assignedTo)
     }
 
     res.status(200).send('Task deleted successfully')
   } catch (error) {
-    console.error('Error deleting task:', error) // Log detailed error
+    console.error('Error deleting task:', error)
     res.status(500).send('Error deleting task')
   }
 }
