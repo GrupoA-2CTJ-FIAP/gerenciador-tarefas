@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Login from './pages/login';
 import Home from './pages/home';  // Import your Home component
-import Teams from './pages/login';  // Import your Teams component
+import Teams from './pages/teams';  // Import your Teams component
 
 function App() {
   return (
@@ -18,7 +18,6 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/teams" element={<Teams />} />
-            {/* Add more routes as needed */}
           </Routes>
         </div>
         <Footer />

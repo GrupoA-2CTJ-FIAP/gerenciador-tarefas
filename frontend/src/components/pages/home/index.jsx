@@ -2,9 +2,8 @@ import React from 'react'
 
 
 const Home = () => {
-    const { currentUser } = useAuth()
     return (
-        <></>
+        <><><h1>HOME</h1></></>
     )
 }
 

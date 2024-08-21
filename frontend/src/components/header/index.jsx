@@ -9,7 +9,7 @@ function Header() {
   return (
     <Navbar expand="lg" data-bs-theme="dark" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="#home">
+        <Navbar.Brand as={Link} to="/">
           <img
             alt=""
             src={logo}
@@ -23,7 +23,8 @@ function Header() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
             <Nav.Link as={Link} to="/">Home</Nav.Link>
-            <Nav.Link href="#teams">Equipes</Nav.Link>
+            <Nav.Link as={Link} to="/teams">Equipes</Nav.Link>
+            <Nav.Link as={Link} to="/login">Login</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
