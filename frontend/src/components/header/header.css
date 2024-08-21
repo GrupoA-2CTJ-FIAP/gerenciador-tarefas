@@ -2,3 +2,7 @@ img {
     margin-inline: 8px;
     filter: invert(1);
 }
+
+basic-navbar-nav{
+    align-items: flex-end;
+}

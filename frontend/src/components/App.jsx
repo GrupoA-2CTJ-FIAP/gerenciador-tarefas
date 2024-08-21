@@ -1,22 +1,30 @@
 import React from 'react';
-import Header from './header'
-import Footer from './footer'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './header';
+import Footer from './footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css'
-import { authenticateUser } from '../services/firebaseAuth.js'
+import './App.css';
+import Login from './pages/login';
+import Home from './pages/home';  // Import your Home component
+import Teams from './pages/login';  // Import your Teams component
 
 function App() {
-  
   return (
-    <div className="App">
-      <Header />
-      <div className="card">
-        <h1>Autenticação com Firebase</h1>
-        <button onClick={() => {authenticateUser('teste@teste.com','senhateste')}}>Login com senha</button>
+    <Router>
+      <div className="App">
+        <Header />
+        <div className="content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/teams" element={<Teams />} />
+            {/* Add more routes as needed */}
+          </Routes>
+        </div>
         <Footer />
       </div>
-    </div>
-  )
+    </Router>
+  );
 }
 
 export default App;
