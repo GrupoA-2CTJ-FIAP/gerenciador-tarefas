@@ -1,6 +1,6 @@
 const db = require('../models/firebase')
 
-<<<<<<< HEAD
+
 // Função para criar um novo team
 const createTeam = async (req, res) => {
   const { name } = req.body
