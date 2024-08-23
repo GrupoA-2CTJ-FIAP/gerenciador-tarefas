@@ -5,14 +5,16 @@ const admin = require('firebase-admin')
 const createTeamMember = async (req, res) => {
   const { name, email, teamId, password } = req.body
   if (!name || !email || !teamId || !password) {
-    return res.status(400).send('All fields are required')
+    console.error('All fields are required')
+    return res.sendStatus(400)
   }
 
   try {
     // Verificar se o team com o ID fornecido existe na coleção 'equipes'
     const teamDoc = await db.collection('equipes').doc(teamId).get()
     if (!teamDoc.exists) {
-      return res.status(400).send('Team ID does not exist')
+      console.error('Team ID does not exist')
+      return res.sendStatus(400)
     }
 
     // Criar usuário no Firebase Authentication
@@ -22,19 +24,18 @@ const createTeamMember = async (req, res) => {
       displayName: name
     })
 
-    // Adicionar o usuário na coleção 'usuarios' do Firestore
-    const newMember = await db.collection('usuarios').add({
+    // Adicionar o usuário na coleção 'usuarios' do Firestore usando o UID como ID do documento
+    await db.collection('usuarios').doc(userRecord.uid).set({
       name,
       email,
       teamId, // Associar o membro com o ID do team
-      totalHours: 0, // Inicialmente 0 horas alocadas
-      uid: userRecord.uid // Vincular o UID do Firebase Authentication
+      totalHours: 0 // Inicialmente 0 horas alocadas
     })
 
-    res.status(201).send({ id: newMember.id })
+    res.status(201).send({ id: userRecord.uid })
   } catch (error) {
     console.error('Error creating team member:', error)
-    res.status(500).send('Error creating team member')
+    return res.sendStatus(500)
   }
 }
 
@@ -48,7 +49,32 @@ const getTeamMembers = async (req, res) => {
     }))
     res.status(200).send(members)
   } catch (error) {
-    res.status(500).send('Error fetching team members')
+    console.error('Error fetching team members:', error)
+    res.sendStatus(500)
+  }
+}
+
+// Função para obter um membro da equipe pelo ID (UID)
+const getTeamMemberById = async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const memberDoc = await db.collection('usuarios').doc(id).get()
+
+    if (!memberDoc.exists) {
+      console.error('Member not found')
+      return res.sendStatus(404)
+    }
+
+    const member = {
+      id: memberDoc.id,
+      ...memberDoc.data()
+    }
+
+    res.status(200).send(member)
+  } catch (error) {
+    console.error('Error fetching team member by ID:', error)
+    res.sendStatus(500)
   }
 }
 
@@ -58,7 +84,8 @@ const updateTeamMember = async (req, res) => {
   const { name, email, teamId } = req.body
 
   if (!name || !email || !teamId) {
-    return res.status(400).send('All fields are required')
+    console.error('All fields are required')
+    return res.sendStatus(400)
   }
 
   try {
@@ -66,7 +93,8 @@ const updateTeamMember = async (req, res) => {
     const memberDoc = await memberRef.get()
 
     if (!memberDoc.exists) {
-      return res.status(404).send('Team member not found')
+      console.error('Team member not found')
+      return res.sendStatus(404)
     }
 
     // Verificar se o e-mail está sendo alterado e se o novo e-mail já existe
@@ -76,7 +104,8 @@ const updateTeamMember = async (req, res) => {
         .where('email', '==', email)
         .get()
       if (!emailSnapshot.empty) {
-        return res.status(400).send('Email already in use')
+        console.error('Email already in use')
+        return res.sendStatus(400)
       }
     }
 
@@ -87,7 +116,8 @@ const updateTeamMember = async (req, res) => {
     })
     res.status(200).send('Team member updated successfully')
   } catch (error) {
-    res.status(500).send('Error updating team member')
+    console.error('Error updating team member', error)
+    res.sendStatus(500)
   }
 }
 
@@ -100,19 +130,22 @@ const deleteTeamMember = async (req, res) => {
     const memberDoc = await memberRef.get()
 
     if (!memberDoc.exists) {
-      return res.status(404).send('Team member not found')
+      console.error('Team member not found')
+      return res.sendStatus(404)
     }
 
     await memberRef.delete()
     res.status(200).send('Team member deleted successfully')
   } catch (error) {
-    res.status(500).send('Error deleting team member')
+    console.error('Error deleting team member', error)
+    res.sendStatus(500)
   }
 }
 
 module.exports = {
   createTeamMember,
   getTeamMembers,
+  getTeamMemberById,
   updateTeamMember,
   deleteTeamMember
 }

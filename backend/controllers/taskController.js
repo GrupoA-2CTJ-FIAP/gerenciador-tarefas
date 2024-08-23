@@ -1,6 +1,5 @@
 const db = require('../models/firebase')
 
-
 // Definir opções permitidas para a prioridade e status
 const PRIORITY_OPTIONS = ['Baixa', 'Média', 'Alta', 'Urgente']
 const STATUS_OPTIONS = ['To-do', 'Em progresso', 'Concluído']
@@ -10,7 +9,6 @@ const validatePriority = priority => PRIORITY_OPTIONS.includes(priority)
 
 // Função para validar o status
 const validateStatus = status => STATUS_OPTIONS.includes(status)
-
 
 // Função para obter todos os membros
 const getMembers = async () => {
@@ -40,7 +38,6 @@ const updateTotalHoursForMember = async memberId => {
 
 // Criar tarefa e atualizar as horas alocadas
 const createTask = async (req, res) => {
-
   const { description, endDate, priority, status, assignedTo, duration } =
     req.body
 
@@ -52,26 +49,26 @@ const createTask = async (req, res) => {
     !assignedTo ||
     !duration
   ) {
-
-    return res.status(400).send('All fields are required')
+    console.error('Error creating task: Missing required fields')
+    return res.sendStatus(400)
   }
 
   if (!validatePriority(priority)) {
-    return res.status(400).send('Invalid priority')
+    console.error('Error creating task: Invalid priority field')
+    return res.sendStatus(400)
   }
-
 
   if (!validateStatus(status)) {
-    return res.status(400).send('Invalid status')
+    console.error('Error creating task: Invalid status field')
+    return res.sendStatus(400)
   }
 
-
   if (!(await validateAssignedTo(assignedTo))) {
-    return res.status(400).send('Invalid assignedTo member ID')
+    console.error('Error creating task: Invalid assignedTo field')
+    return res.sendStatus(400)
   }
 
   try {
-
     const endTimestamp = new Date(endDate)
 
     const newTask = await db.collection('atividades').add({
@@ -80,17 +77,15 @@ const createTask = async (req, res) => {
       priority,
       status,
       assignedTo,
-      duration: parseFloat(duration) // Duração fornecida pelo usuário
+      duration: parseFloat(duration)
     })
 
     await updateTotalHoursForMember(assignedTo)
 
     res.status(201).send({ id: newTask.id })
   } catch (error) {
-
     console.error('Error creating task:', error)
-
-    res.status(500).send('Error creating task')
+    res.sendStatus(500)
   }
 }
 
@@ -102,8 +97,6 @@ const getTasks = async (req, res) => {
       tasksSnapshot.docs.map(async doc => {
         const taskData = doc.data()
         let memberData = null
-
-        // Verifica se assignedTo é um valor válido
 
         if (taskData.assignedTo) {
           try {
@@ -127,17 +120,54 @@ const getTasks = async (req, res) => {
     )
     res.status(200).json(tasks)
   } catch (error) {
-
     console.error('Error fetching tasks:', error)
+    res.sendStatus(500)
+  }
+}
 
-    res.status(500).json({ error: 'Failed to get tasks' })
+// Função para obter uma tarefa específica pelo ID com dados do membro atribuído
+const getTaskById = async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const taskDoc = await db.collection('atividades').doc(id).get()
+
+    if (!taskDoc.exists) {
+      return res.sendStatus(404)
+    }
+
+    const taskData = taskDoc.data()
+    let memberData = null
+
+    if (taskData.assignedTo) {
+      try {
+        const memberSnapshot = await db
+          .collection('usuarios')
+          .doc(taskData.assignedTo)
+          .get()
+        memberData = memberSnapshot.exists ? memberSnapshot.data() : null
+      } catch (memberError) {
+        console.error('Error fetching member data:', memberError)
+        memberData = null
+      }
+    }
+
+    const task = {
+      id: taskDoc.id,
+      ...taskData,
+      assignedToMember: memberData
+    }
+
+    res.status(200).json(task)
+  } catch (error) {
+    console.error('Error fetching task by ID:', error)
+    res.sendStatus(500)
   }
 }
 
 // Atualizar tarefa e as horas alocadas, se necessário
 const updateTask = async (req, res) => {
   const { id } = req.params
-
   const { description, endDate, priority, status, assignedTo, duration } =
     req.body
 
@@ -149,47 +179,44 @@ const updateTask = async (req, res) => {
     !assignedTo ||
     !duration
   ) {
-
-    return res.status(400).send('All fields are required')
+    console.error('Error updating task: Missing required fields')
+    return res.sendStatus(400)
   }
 
   if (!validatePriority(priority)) {
-    return res.status(400).send('Invalid priority')
+    console.error('Error updating task: Invalid priority field')
+    return res.sendStatus(400)
   }
-
 
   if (!validateStatus(status)) {
-    return res.status(400).send('Invalid status')
+    console.error('Error updating task: Invalid status field')
+    return res.sendStatus(400)
   }
 
-
   if (!(await validateAssignedTo(assignedTo))) {
-    return res.status(400).send('Invalid assignedTo member ID')
+    console.error('Error updating task: Invalid assignedTo field')
+    return res.sendStatus(400)
   }
 
   try {
-
     const endTimestamp = new Date(endDate)
-
 
     const taskRef = db.collection('atividades').doc(id)
     const task = await taskRef.get()
 
     if (!task.exists) {
-      return res.status(404).send('Task not found')
+      return res.sendStatus(404)
     }
 
     const previousAssignedTo = task.data().assignedTo
 
     await taskRef.update({
       description,
-
       endDate: endTimestamp,
       priority,
       status,
       assignedTo,
-      duration: parseFloat(duration) // Duração fornecida pelo usuário
-
+      duration: parseFloat(duration)
     })
 
     if (assignedTo !== previousAssignedTo) {
@@ -197,9 +224,10 @@ const updateTask = async (req, res) => {
     }
     await updateTotalHoursForMember(assignedTo)
 
-    res.status(200).send('Task updated successfully')
+    res.sendStatus(200)
   } catch (error) {
-    res.status(500).send('Error updating task')
+    console.error('Error updating task:', error)
+    res.sendStatus(500)
   }
 }
 
@@ -212,32 +240,29 @@ const deleteTask = async (req, res) => {
     const taskSnapshot = await taskRef.get()
 
     if (!taskSnapshot.exists) {
-      return res.status(404).send('Task not found')
+      return res.sendStatus(404)
     }
 
     const taskData = taskSnapshot.data()
     const assignedTo = taskData.assignedTo
 
-
     await taskRef.delete()
-
 
     if (assignedTo) {
       await updateTotalHoursForMember(assignedTo)
     }
 
-    res.status(200).send('Task deleted successfully')
+    res.sendStatus(200)
   } catch (error) {
-
     console.error('Error deleting task:', error)
-
-    res.status(500).send('Error deleting task')
+    res.sendStatus(500)
   }
 }
 
 module.exports = {
   createTask,
   getTasks,
+  getTaskById,
   updateTask,
   deleteTask
 }

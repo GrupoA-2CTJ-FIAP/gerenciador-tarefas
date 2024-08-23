@@ -1,20 +1,18 @@
 const db = require('../models/firebase')
 
-
 // Função para criar um novo team
 const createTeam = async (req, res) => {
   const { name } = req.body
   if (!name) {
-    return res.status(400).send(error)
+    return res.sendStatus(400)
   }
 
   try {
-    const newTeam = await db.collection('equipes').add({
-      name
-    })
+    const newTeam = await db.collection('equipes').add({ name })
     res.status(201).send({ id: newTeam.id })
   } catch (error) {
-    res.status(500).send('Error creating team')
+    console.error('Error creating team:', error)
+    res.sendStatus(500)
   }
 }
 
@@ -43,7 +41,42 @@ const getTeam = async (req, res) => {
     res.status(200).send(team)
   } catch (error) {
     console.error('Error fetching team:', error)
-    res.status(500).json({ message: 'Error fetching team' })
+    res.sendStatus(500)
+  }
+}
+
+// Função para obter uma equipe específica pelo ID com seus membros
+const getTeamById = async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const teamDoc = await db.collection('equipes').doc(id).get()
+
+    if (!teamDoc.exists) {
+      return res.sendStatus(404)
+    }
+
+    const teamData = teamDoc.data()
+    const membersSnapshot = await db
+      .collection('usuarios')
+      .where('teamId', '==', id)
+      .get()
+
+    const membersteam = membersSnapshot.docs.map(memberDoc => ({
+      id: memberDoc.id,
+      ...memberDoc.data()
+    }))
+
+    const team = {
+      id: teamDoc.id,
+      ...teamData,
+      membersteam
+    }
+
+    res.status(200).send(team)
+  } catch (error) {
+    console.error('Error fetching team by ID:', error)
+    res.sendStatus(500)
   }
 }
 
@@ -52,16 +85,16 @@ const updateTeam = async (req, res) => {
   const { id } = req.params
   const { name } = req.body
   if (!name) {
-    return res.status(400).send(error)
+    return res.sendStatus(400)
   }
 
   try {
     const teamRef = db.collection('equipes').doc(id)
     await teamRef.update({ name })
-    res.status(200).send('Team updated successfully')
+    res.sendStatus(200)
   } catch (error) {
     console.error('Error updating team:', error)
-    res.status(500).send('Error updating team')
+    res.sendStatus(500)
   }
 }
 
@@ -71,18 +104,17 @@ const deleteTeam = async (req, res) => {
 
   try {
     await db.collection('equipes').doc(id).delete()
-    res.status(200).send('Team deleted successfully')
+    res.sendStatus(200)
   } catch (error) {
-    res.status(500).send('Error deleting team')
-
+    console.error('Error deleting team:', error)
+    res.sendStatus(500)
   }
 }
 
 module.exports = {
-
   createTeam,
   getTeam,
+  getTeamById,
   updateTeam,
   deleteTeam
-
 }
