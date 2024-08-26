@@ -3,7 +3,7 @@ import React from 'react'
 
 const Teams = () => {
     return (
-        <><h1>TIMES</h1></>
+        <><h1>Gerenciar Equipes</h1></>
     )
 }
 

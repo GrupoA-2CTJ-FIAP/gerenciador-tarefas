@@ -1,13 +1,16 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getMessaging, getToken } from 'firebase/messaging'
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
+const messaging = getMessaging(app);
 
 export const authenticateUser = (email, password) => {
     return signInWithEmailAndPassword(auth, email, password)
@@ -44,3 +47,66 @@ export const createUser = (email, password) => {
             const errorMessage = error.message;
         });
 };
+
+export const logOut = () => {
+    return signOut(auth)
+        .then(() => {
+            console.log("User signed out.")
+        }).catch((error) => {
+            console.error('Sign out error:', error)
+        });
+}
+
+export const checkLoginState = () => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/auth.user
+            const uT = user.accessToken;
+            console.log('Token:', uT)
+            // ...
+        } else {
+            // User is signed out
+            console.log('Not logged in')
+            // ...
+        }
+    });
+}
+
+export async function requestPermission() {
+    console.log('Requesting permission...')
+
+    try {
+        const permission = await Notification.requestPermission()
+
+        if (permission === 'granted') {
+            console.log('Notification permission granted.')
+            // Initialize Firebase Cloud Messaging and get a reference to the service
+            try {
+                const currentToken = await getToken(messaging, {
+                    vapidKey:
+                        'BHxomewHNc7LRuGPD03Ki2F3znkE2SZ1tgxtZdwwpvnG8Ytq7iNWugXV0tKyM-yelgL4WFItekgkTmWqniX953I'
+                })
+
+                if (currentToken) {
+                    console.log('Token received:', currentToken)
+                    // Você pode adicionar lógica aqui para usar o token recebido
+                } else {
+                    console.log(
+                        'No registration token available. Request permission to generate one.'
+                    )
+                }
+            } catch (error) {
+                console.error('Error retrieving token:', error)
+            }
+        } else {
+            console.log('Notification permission denied.')
+        }
+    } catch (error) {
+        console.error('Error requesting permission:', error)
+    }
+}
+
+
+export { auth }
+
