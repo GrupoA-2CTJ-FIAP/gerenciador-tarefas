@@ -33,7 +33,7 @@ function Home() {
                     const teamMembers = members.filter((member) => member.teamId === team.id);
 
                     return (
-                        <section key={team.id} className="mb-4" style={{ backgroundColor: colors[index % colors.length] }}>
+                        <section key={team.id} className="mb" style={{ backgroundColor: colors[index % colors.length] }}>
                             <h2 className='team-heading'>{team.name}</h2>
                             <div className='carousel-container'>
                                 {teamMembers.length > 0 ? (
@@ -44,17 +44,17 @@ function Home() {
                                                     <Card.Body>
                                                         <Card.Title>{filteredMember.name || 'N/A'}</Card.Title>
                                                         <Card.Text>
-                                                            <p>{filteredMember.email || 'N/A'} </p>
-                                                            <p>Carga horária acumulada: {filteredMember.totalHours || '0'} hora(s).</p>
+                                                            <span>{filteredMember.email || 'N/A'} </span><br/>
+
                                                         </Card.Text>
-                                                        <CardModal member={filteredMember}></CardModal>
+                                                        <div style={{ display: 'flex', alignItems: 'center' }}><CardModal member={filteredMember}></CardModal><h3 className={filteredMember.totalHours === '0'? 'grey-text' : ''}>{filteredMember.totalHours}h</h3></div>
                                                     </Card.Body>
                                                 </Card>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-center">Não há colaboradores nesta equipe.</p>
+                                    <span className="text-center">Não há colaboradores nesta equipe.</span>
                                 )}
                             </div>
                         </section>

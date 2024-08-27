@@ -21,8 +21,8 @@ function Example({ member }) {
 
     return (
         <>
-            <Button variant="secondary" onClick={handleShow} disabled={activities.length === 0}>
-                Ver Atividades
+            <Button style={{backgroundColor:'cadetblue'}} onClick={handleShow} disabled={activities.length === 0}>
+                {activities.length === 0 ? ("Nenhuma Atividade") : ("Ver Atividades")}
             </Button>
 
             <Modal show={show} onHide={handleClose}>

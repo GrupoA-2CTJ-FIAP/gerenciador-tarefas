@@ -11,6 +11,7 @@ section {
 h1 {
     text-align: center;
     margin-bottom: 40px;
+    color: darkslategray;
 }
 
 h2 {
@@ -20,14 +21,20 @@ h2 {
     text-align: left;
 }
 
-.team-carousel{
+h3 {
+    margin-left: 8px;
+    margin-bottom: 0px;
+    color: dodgerblue;
+}
+
+.team-carousel {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 }
 
 .member-card {
-    margin-inline:2px;
+    margin-inline: 2px;
     max-width: 18rem;
     min-width: 100px;
 }
@@ -36,7 +43,7 @@ h2 {
     color: black;
 }
 
-.activityForm{
+.activityForm {
     display: flex;
     justify-content: center;
 }
