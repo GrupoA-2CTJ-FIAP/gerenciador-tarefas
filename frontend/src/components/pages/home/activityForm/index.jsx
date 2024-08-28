@@ -5,21 +5,44 @@ import { Form, Button } from 'react-bootstrap'
 function ActivityForm({ members }) {
     const [duration, setDuration] = useState(1);
     const [validated, setValidated] = useState(false);
+    const [description, setDescription] = useState();
+    const [assignedTo, setAssignedTo] = useState();
 
     useEffect(() => {
     }, []);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
+        event.preventDefault();
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
-            event.preventDefault();
             event.stopPropagation();
-            console.log('Form is invalid.');
-        }else{
-            console.log('Form is valid!');
+        } else {
+            try {
+                // Perform form submission
+                await instance.post('tasks', {
+                    "description":description,
+                    "endDate": getTodayDate(),
+                    "priority": 'Alta',
+                    "status": 'Em progresso',
+                    "assignedTo":assignedTo,
+                    "duration":duration
+                });
+                
+                if(!alert('Atividade criada com sucesso!')){window.location.reload();}
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('Erro ao criar atividade!')
+            }
         }
-
         setValidated(true);
+    };
+
+    const getTodayDate = () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     };
 
     return (
@@ -28,7 +51,7 @@ function ActivityForm({ members }) {
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                     <Form.Label>Colaborador</Form.Label>
-                    <Form.Select aria-label="Carregando...">
+                    <Form.Select aria-label="Carregando..." onChange={(e) => setAssignedTo(e.target.value)}>
                         {members.length > 0 ? (
                             members.map((member) => (
                                 <option key={member.id} value={member.id}>{member.name} ({member.email})</option>
@@ -40,7 +63,7 @@ function ActivityForm({ members }) {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                     <Form.Label>Descrição</Form.Label>
-                    <Form.Control as="textarea" rows={2} required/>
+                    <Form.Control as="textarea" rows={2} onChange={(e) => setDescription(e.target.value)} required />
                     <br />
                     <div className='slider-container'>
                         <label htmlFor="slider">Quantidade de horas</label>
