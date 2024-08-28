@@ -41,9 +41,14 @@ function cardModal({ member }) {
 
     return (
         <>
-            <Button style={{ backgroundColor: 'cadetblue' }} onClick={handleShow} disabled={activities.length === 0}>
+            {/*<Button style={{ backgroundColor: 'lightseagreen' }} onClick={handleShow} disabled={activities.length === 0}>
                 {activities.length === 0 ? ("Nenhuma Atividade") : ("Ver Atividades")}
-            </Button>
+            </Button>*/}
+            {!(activities.length === 0) && (
+                <Button size='sm' style={{ backgroundColor: 'lightseagreen' }} onClick={handleShow}>
+                    Ver Atividades
+                </Button>
+            )}
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>

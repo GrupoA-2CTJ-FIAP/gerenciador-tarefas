@@ -1,3 +1,8 @@
+:root {
+    --primary-text-color: darkslategray;
+  }
+
+
 section {
     display: flex;
     flex-direction: column;
@@ -11,10 +16,11 @@ section {
 h1 {
     text-align: center;
     margin-bottom: 40px;
-    color: darkslategray;
+    color: var(--primary-text-color);
 }
 
 h2 {
+    color:var(--primary-text-color);
     flex: 0 1 auto;
     margin: 0;
     padding-bottom: 10px;
@@ -27,6 +33,10 @@ h3 {
     color: dodgerblue;
 }
 
+.grey-text{
+    color: lightgrey;
+}
+
 .team-carousel {
     display: flex;
     flex-direction: row;
@@ -34,7 +44,7 @@ h3 {
 }
 
 .member-card {
-    margin-inline: 2px;
+    margin: 2px;
     max-width: 18rem;
     min-width: 100px;
 }
@@ -43,7 +53,13 @@ h3 {
     color: black;
 }
 
+.form-container h2{
+    margin-top:32px;
+    margin-bottom: 12px;
+}
+
 .activityForm {
+    color:var(--primary-text-color);
     display: flex;
     justify-content: center;
 }

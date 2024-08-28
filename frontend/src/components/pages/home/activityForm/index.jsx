@@ -46,7 +46,7 @@ function ActivityForm({ members }) {
     };
 
     return (
-        <section className="form-container">
+        <div className="form-container">
             <h2>Cadastrar Atividade</h2>
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
@@ -81,7 +81,7 @@ function ActivityForm({ members }) {
                     <Button type="submit">Enviar</Button>
                 </Form.Group>
             </Form>
-        </section>
+        </div>
     );
 }
 

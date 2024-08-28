@@ -42,12 +42,12 @@ function Home() {
                                             <div key={filteredMember.id}>
                                                 <Card className='member-card'>
                                                     <Card.Body>
-                                                        <Card.Title>{filteredMember.name || 'N/A'}</Card.Title>
-                                                        <Card.Text>
+                                                        <Card.Title className={filteredMember.totalHours === 0? 'grey-text' : 'normal-text'}>{filteredMember.name || 'N/A'}</Card.Title>
+                                                        <Card.Text className={filteredMember.totalHours === 0? 'grey-text' : 'normal-text'}>
                                                             <span>{filteredMember.email || 'N/A'} </span><br/>
 
                                                         </Card.Text>
-                                                        <div style={{ display: 'flex', alignItems: 'center' }}><CardModal member={filteredMember}></CardModal><h3 className={filteredMember.totalHours === '0'? 'grey-text' : ''}>{filteredMember.totalHours}h</h3></div>
+                                                        <div style={{ display: 'flex', alignItems: 'center' }}><CardModal member={filteredMember}></CardModal><h3 className={filteredMember.totalHours === 0? 'grey-text' : 'normal-text'}>{filteredMember.totalHours}h</h3></div>
                                                     </Card.Body>
                                                 </Card>
                                             </div>
