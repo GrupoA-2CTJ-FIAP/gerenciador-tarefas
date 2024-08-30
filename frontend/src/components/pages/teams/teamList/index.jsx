@@ -17,9 +17,8 @@ function TeamList() {
             .catch((err) => console.log(err));
     }, []);
 
-    function handleDelete(tId) {
-        console.log(tId);
-        if (confirm("Deseja excluir a atividade " + tId + "?")) {
+    function handleDelete(tId,tName) {
+        if (confirm("Deseja excluir a equipe " + tName + "?")) {
             instance
                 .delete(`/team/${tId}`)
                 .then(() => {
@@ -29,34 +28,51 @@ function TeamList() {
                     console.error('Error deleting team:', error);
                 });
         }
-
+    }
+    function handleDeleteMember(mId,mName) {
+        if (confirm("Deseja excluir o colaborador " + mName + "?")) {
+            instance
+                .delete(`/members/${mId}`)
+                .then(() => {
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error deleting member:', error);
+                });
+        }
     }
 
     return (
         <div className="team-list">
             <h2 className='title'>Equipes</h2>
-            <Table className="table">
-                <thead>
-                    <tr>
-                        <th>Equipe</th>
-                        <th>ID</th>
-                        <th>Excluir</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {teams.length > 0 ? (
-                        teams.map((team) => (
-                            <tr key={team.id}>
-                                <td>{team.name || 'N/A'}</td>
-                                <td>{team.id || 'N/A'}</td>
-                                <td><Button variant='danger' onClick={() => handleDelete(team.id)}>X</Button></td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr><td colSpan="3">Erro ao carregar equipes.</td></tr>
-                    )}
-                </tbody>
-            </Table>
+            <div className="container">
+                <Accordion>
+                    {teams.map((team) => (
+                        <Accordion.Item eventKey={team.id} key={team.id}>
+                            <Accordion.Header>{team.name}</Accordion.Header>
+                            <Accordion.Body>
+                                {team.membersteam && Object.keys(team.membersteam).length > 0 ? (
+                                    <ul>
+                                        {Object.entries(team.membersteam).map(([key, member]) => (
+                                            <li key={key}>
+                                                {member.name} - {member.email} - {member.totalHours} horas
+                                                {member.totalHours ===0?(<Button size="sm" className="deleteMemberButton" variant="danger" onClick={() => handleDeleteMember(member.id,member.name)}> Excluir </Button>):(<></>)}
+                                                <hr/>
+                                            </li>           
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <div>
+                                        <p>Não há membros</p>
+                                        <Button variant="danger" onClick={() => handleDelete(team.id,team.name)} className="deleteTeamButton">Excluir Equipe</Button>
+                                    </div>
+                                )}
+                                <Button>Adicionar colaborador</Button>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    ))}
+                </Accordion>
+            </div>
         </div>
     );
 }
