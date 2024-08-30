@@ -8,9 +8,6 @@ function ActivityForm({ members }) {
     const [description, setDescription] = useState();
     const [assignedTo, setAssignedTo] = useState();
 
-    useEffect(() => {
-    }, []);
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         const form = event.currentTarget;
@@ -20,15 +17,15 @@ function ActivityForm({ members }) {
             try {
                 // Perform form submission
                 await instance.post('tasks', {
-                    "description":description,
+                    "description": description,
                     "endDate": getTodayDate(),
                     "priority": 'Alta',
                     "status": 'Em progresso',
-                    "assignedTo":assignedTo,
-                    "duration":duration
+                    "assignedTo": assignedTo,
+                    "duration": duration
                 });
-                
-                if(!alert('Atividade criada com sucesso!')){window.location.reload();}
+
+                if (!alert('Atividade criada com sucesso!')) { window.location.reload(); }
             } catch (error) {
                 console.error('Error submitting form:', error);
                 alert('Erro ao criar atividade!')
@@ -45,6 +42,8 @@ function ActivityForm({ members }) {
         return `${year}-${month}-${day}`;
     };
 
+    const sortedMembers = members.sort((a, b) => a.name.localeCompare(b.name));
+
     return (
         <div className="form-container">
             <h2>Cadastrar Atividade</h2>
@@ -52,8 +51,8 @@ function ActivityForm({ members }) {
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                     <Form.Label>Colaborador</Form.Label>
                     <Form.Select aria-label="Carregando..." onChange={(e) => setAssignedTo(e.target.value)}>
-                        {members.length > 0 ? (
-                            members.map((member) => (
+                        {sortedMembers.length > 0 ? (
+                            sortedMembers.map((member) => (
                                 <option key={member.id} value={member.id}>{member.name} ({member.email})</option>
                             ))
                         ) : (

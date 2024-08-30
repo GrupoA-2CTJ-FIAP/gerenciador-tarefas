@@ -1,0 +1,68 @@
+:root {
+    --primary-text-color: darkslategray;
+}
+
+
+section {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 20px;
+    box-sizing: border-box;
+    height: max-content;
+    margin: 0px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--primary-text-color);
+}
+
+h2 {
+    color: var(--primary-text-color);
+    flex: 0 1 auto;
+    margin: 0;
+    padding-bottom: 10px;
+    text-align: left;
+}
+
+h3 {
+    margin-left: 8px;
+    margin-bottom: 0px;
+    color: dodgerblue;
+}
+
+.grey-text {
+    color: lightgrey;
+}
+
+.team-carousel {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+
+.team-list {
+    display: flexbox;
+    width: 50%;
+    margin: 0 auto;
+}
+
+.team-form{
+    margin: 0 auto;
+    width: 50%;
+}
+
+.team-form *{
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.teamForm {
+    color: var(--primary-text-color);
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
