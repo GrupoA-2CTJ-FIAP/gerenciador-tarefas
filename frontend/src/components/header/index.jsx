@@ -5,7 +5,8 @@ import logo from '../../assets/brand-icon.png';
 import mail from '../../assets/mail.svg';
 import './header.css';
 import { Link } from 'react-router-dom';
-import { requestPermission } from '../../services/firebase';
+import { checkLoginState, requestPermission, logOut } from '../../services/firebase';
+import ProtectedRoute from '../routes/ProtectedRoute';
 
 function Header() {
   return (
@@ -26,12 +27,15 @@ function Header() {
           <Nav className="ms-auto">
             <Nav.Link as={Link} to="/">Home</Nav.Link>
             <Nav.Link as={Link} to="/teams">Equipes</Nav.Link>
-            <Nav.Link as={Link} to="/login">Login</Nav.Link>
+            {/*<Nav.Link as={Link} to="/login">Login</Nav.Link>*/}
+            <ProtectedRoute>
+              <Nav.Link as={Link} onClick={logOut} style={{ color: 'red' }}>Sair</Nav.Link>
+            </ProtectedRoute>
             <Nav.Link onClick={requestPermission}><img alt=""
-            src={mail}
-            width="30"
-            height="30"
-            className="d-inline-block align-top"></img></Nav.Link>
+              src={mail}
+              width="30"
+              height="30"
+              className="d-inline-block align-top"></img></Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

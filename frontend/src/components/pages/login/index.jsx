@@ -58,12 +58,14 @@ const Login = () => {
             <Button variant="primary" type="submit" className="mt-4 w-100">
               Login
             </Button>
+            {/*
             <Button variant="secondary" onClick={checkLoginState} className="mt-4 w-100">
               Check user
             </Button>
             <Button variant="danger" onClick={logOut} className="mt-4 w-100">
               Logout
             </Button>
+            */}
           </Form>
         </Col>
       </Row>

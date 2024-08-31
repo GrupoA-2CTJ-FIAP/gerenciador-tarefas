@@ -63,12 +63,13 @@ export const checkLoginState = () => {
             // User is signed in, see docs for a list of available properties
             // https://firebase.google.com/docs/reference/js/auth.user
             const uT = user.accessToken;
-            console.log('Token:', uT)
+            console.log(uT);
+            return uT;
             // ...
         } else {
             // User is signed out
             console.log('Not logged in')
-            // ...
+            return null;
         }
     });
 }
