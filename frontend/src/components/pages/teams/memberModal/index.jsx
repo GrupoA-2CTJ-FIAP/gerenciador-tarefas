@@ -8,10 +8,12 @@ function MemberModal({ team }) {
     const [changes, setChanges] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const handleClose = () =>  setShow(false);
+    const [password, setPassword] = useState('');
+    const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
     const handleSubmit = async (event) => {
+        console.log(password);
         event.preventDefault();
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
@@ -22,10 +24,10 @@ function MemberModal({ team }) {
                     "name": name,
                     "email": email,
                     "teamId": team.id,
-                    "password": "senha123"
+                    "password": password
                 });
 
-                if (!alert('Colaborador criado com sucesso na equipe:'+team.name)) { window.location.reload(); }
+                if (!alert('Colaborador criado com sucesso na equipe:' + team.name)) { window.location.reload(); }
             } catch (error) {
                 console.error('Error submitting form:', error);
                 alert('Erro ao criar colaborador!')
@@ -49,9 +51,10 @@ function MemberModal({ team }) {
                 <Modal.Body>
                     <h5>Novo Colaborador</h5>
                     <Form noValidate>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Group className="mb-3">
                             <Form.Label>Nome</Form.Label>
                             <Form.Control
+                                id="nameInput"
                                 type="text"
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="Nome do colaborador"
@@ -59,10 +62,19 @@ function MemberModal({ team }) {
                             />
                             <Form.Label>E-mail</Form.Label>
                             <Form.Control
+                                id="emailInput"
                                 type="mail"
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="E-mail do colaborador"
                                 aria-label="E-mail do colaborador"
+                            />
+                            <Form.Label>Senha</Form.Label>
+                            <Form.Control
+                                id="pwdInput"
+                                type="password"
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Senha"
+                                aria-label="Senha"
                             />
                             <Button type="submit" onClick={handleSubmit} className='memberModalButton'>Enviar</Button>
                         </Form.Group>
