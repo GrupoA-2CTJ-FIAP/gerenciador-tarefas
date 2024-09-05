@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { GoogleAuthProvider } from 'firebase/auth/web-extension';
 import { getMessaging, getToken } from 'firebase/messaging'
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,

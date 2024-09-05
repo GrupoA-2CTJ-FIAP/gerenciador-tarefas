@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import instance from "../../../../services/firestore";
 import { Table, Button, Accordion } from "react-bootstrap";
+import MemberModal from "../memberModal";
 
 function TeamList() {
     const [teams, setTeams] = useState([]);
@@ -11,7 +12,6 @@ function TeamList() {
             .then((res) => {
                 if (res.data && Array.isArray(res.data)) {
                     setTeams(res.data);
-                    console.log(res.data); // Check the structure here
                 }
             })
             .catch((err) => console.log(err));
@@ -67,7 +67,7 @@ function TeamList() {
                                         <Button variant="danger" onClick={() => handleDelete(team.id,team.name)} className="deleteTeamButton">Excluir Equipe</Button>
                                     </div>
                                 )}
-                                <Button>Adicionar colaborador</Button>
+                                <MemberModal team={team}/>
                             </Accordion.Body>
                         </Accordion.Item>
                     ))}
