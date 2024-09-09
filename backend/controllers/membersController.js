@@ -100,13 +100,15 @@ const deleteTeamMember = async (req, res) => {
     const memberDoc = await memberRef.get()
 
     if (!memberDoc.exists) {
-      return res.status(404).send('Team member not found')
+      console.error('Team member not found')
+      return res.sendStatus(404)
     }
 
     await memberRef.delete()
     res.status(200).send('Team member deleted successfully')
   } catch (error) {
-    res.status(500).send('Error deleting team member')
+    console.error('Error deleting team member', error)
+    res.sendStatus(500)
   }
 }
 
