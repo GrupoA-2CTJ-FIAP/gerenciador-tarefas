@@ -55,6 +55,5 @@ A tela de "Gerenciar Equipes" nos permite criar novas equipes, adicionar novos c
 
 Note que todos os logins cadastrados para colaboradores possuem acesso à ferramenta.
 
-<a href="https://www.youtube.com/watch?v=7PCFDKDcA7I"/>
-
+<a href="https://www.youtube.com/watch?v=7PCFDKDcA7I" target="_blank">Video de Uso</a>
 
