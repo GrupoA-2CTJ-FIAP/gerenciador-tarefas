@@ -121,11 +121,12 @@ const updateTeamMember = async (req, res) => {
   }
 }
 
-// Função para deletar um membro da equipe
+/// Função para deletar um membro da equipe
 const deleteTeamMember = async (req, res) => {
   const { id } = req.params
 
   try {
+    // Verificar se o membro existe no Firestore
     const memberRef = db.collection('usuarios').doc(id)
     const memberDoc = await memberRef.get()
 
@@ -134,10 +135,19 @@ const deleteTeamMember = async (req, res) => {
       return res.sendStatus(404)
     }
 
+    // Deletar o membro no Firestore
     await memberRef.delete()
-    res.status(200).send('Team member deleted successfully')
+
+    // Deletar o usuário no Firebase Authentication
+    await admin.auth().deleteUser(id)
+
+    res
+      .status(200)
+      .send(
+        'Team member deleted successfully from Firestore and Authentication'
+      )
   } catch (error) {
-    console.error('Error deleting team member', error)
+    console.error('Error deleting team member:', error)
     res.sendStatus(500)
   }
 }
